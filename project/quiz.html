@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Literacy Quiz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            background: black;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .quiz-container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-in-out;
+            position: relative;
+            z-index: 1;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .option {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 14px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 18px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .option:hover {
+            background: linear-gradient(45deg, #5417c8, #1b5fc3);
+            transform: scale(1.05);
+        }
+        .next-btn {
+            margin-top: 20px;
+            padding: 14px;
+            background: linear-gradient(45deg, #43a047, #66bb6a);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none;
+            width: 100%;
+            font-size: 18px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .next-btn:hover {
+            background: linear-gradient(45deg, #2e7d32, #388e3c);
+        }
+        @media (max-width: 600px) {
+            .quiz-container {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="starsCanvas"></canvas>
+    <div class="quiz-container">
+        <h2 id="question">Loading...</h2>
+        <div id="options"></div>
+        <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        const quizData = [
+            { question: "What is a budget?", options: ["A spending plan", "A type of loan", "A credit score"], answer: "A spending plan" },
+            { question: "What does APR stand for?", options: ["Annual Percentage Rate", "Annual Payment Report", "Automated Payroll Record"], answer: "Annual Percentage Rate" },
+            { question: "What is the purpose of an emergency fund?", options: ["To cover unexpected expenses", "To invest in stocks", "To pay off a mortgage"], answer: "To cover unexpected expenses" },
+            { question: "Which of these is a liability?", options: ["A home mortgage", "A savings account", "An investment portfolio"], answer: "A home mortgage" },
+            { question: "What does a credit score measure?", options: ["Your income", "Your ability to repay debt", "Your net worth"], answer: "Your ability to repay debt" },
+            { question: "What is compound interest?", options: ["Earning interest on interest", "A type of tax", "A method of budgeting"], answer: "Earning interest on interest" },
+            { question: "What does inflation affect?", options: ["The purchasing power of money", "The speed of internet", "The number of banks"], answer: "The purchasing power of money" },
+            { question: "What is an asset?", options: ["Something valuable you own", "A loan", "An expense"], answer: "Something valuable you own" },
+            { question: "What is the safest way to store emergency savings?", options: ["In a high-yield savings account", "In cash at home", "Invested in stocks"], answer: "In a high-yield savings account" },
+            { question: "What is a diversified investment portfolio?", options: ["A mix of different asset types", "Investing in one stock", "Keeping all money in a savings account"], answer: "A mix of different asset types" }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            document.getElementById("question").textContent = quizData[currentQuestion].question;
+            let optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = "";
+            quizData[currentQuestion].options.forEach(option => {
+                let button = document.createElement("button");
+                button.textContent = option;
+                button.classList.add("option");
+                button.onclick = () => selectAnswer(option);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(option) {
+            if (option === quizData[currentQuestion].answer) {
+                score++;
+            }
+            document.querySelectorAll(".option").forEach(btn => btn.disabled = true);
+            document.getElementById("nextBtn").style.display = "block";
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+                document.getElementById("nextBtn").style.display = "none";
+            } else {
+                displayResult();
+            }
+        }
+
+        function displayResult() {
+            let rating = score >= 7 ? "🎉 Expert!" : score >= 4 ? "😊 Intermediate." : "😢 Beginner.";
+            document.querySelector(".quiz-container").innerHTML = <h2>Quiz Completed!</h2><p>Your score: ${score} / ${quizData.length}</p><p>${rating}</p>;
+        }
+
+        loadQuestion();
+
+        // Dynamic Stars Background
+        const canvas = document.getElementById("starsCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let stars = Array.from({ length: 200 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 2,
+            speed: Math.random() * 0.5 + 0.2
+        }));
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function animateStars() {
+            stars.forEach(star => {
+                star.y += star.speed;
+                if (star.y > canvas.height) star.y = 0;
+            });
+            drawStars();
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+    </script>
+</body>
+</html>
