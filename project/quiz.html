@@ -150,7 +150,7 @@
 
         function displayResult() {
             let rating = score >= 7 ? "🎉 Expert!" : score >= 4 ? "😊 Intermediate." : "😢 Beginner.";
-            document.querySelector(".quiz-container").innerHTML = <h2>Quiz Completed!</h2><p>Your score: ${score} / ${quizData.length}</p><p>${rating}</p>;
+            document.querySelector(".quiz-container").innerHTML =` <h2>Quiz Completed!</h2><p>Your score: ${score} / ${quizData.length}</p><p>${rating}</p>`;
         }
 
         loadQuestion();
